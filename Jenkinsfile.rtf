@@ -1,0 +1,56 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2580
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 pipeline \{\
+    agent any\
+\
+    environment \{\
+        AWS_REGION = 'us-west-2'\
+        TF_VERSION = '1.0.0'\
+        AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')\
+        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')\
+    \}\
+\
+    stages \{\
+        stage(\'91ED_Checkout') \{\
+            steps \{\
+                checkout scm\
+            \}\
+        \}\
+\
+        stage('Init') \{\
+            steps \{\
+                script \{\
+                    docker.image("hashicorp/terraform:$\{ED_TF_VERSION\}").inside \{\
+                        sh 'terraform init'\
+                    \}\
+                \}\
+            \}\
+        \}\
+\
+        stage('Plan') \{\
+            steps \{\
+                script \{\
+                    docker.image("hashicorp/terraform:$\{ED_TF_VERSION\}").inside \{\
+                        sh 'terraform plan -out=tfplan'\
+                    \}\
+                \}\
+            \}\
+        \}\
+\
+        stage('Apply') \{\
+            steps \{\
+                script \{\
+                    docker.image("hashicorp/terraform:$\{ED_TF_VERSION\}").inside \{\
+                        sh 'terraform apply tfplan'\
+                    \}\
+                \}\
+            \}\
+        \}\
+    \}\
+\}\
+}
